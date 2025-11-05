@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background: #5568d3;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create New User</h1>
+        
+        <div class="success-message" id="successMessage"></div>
+        <div class="error-message" id="errorMessage"></div>
+        
+        <form id="createUserForm">
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required data-testid="name-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required data-testid="email-input">
+            </div>
+            
+            <div class="form-group">
+                <label for="role">Role *</label>
+                <select id="role" name="role" required data-testid="role-select">
+                    <option value="">Select a role</option>
+                    <option value="Admin">Admin</option>
+                    <option value="User">User</option>
+                    <option value="Manager">Manager</option>
+                </select>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn" data-testid="submit-button">Create User</button>
+                <a href="list.html" class="btn btn-secondary" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('createUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const role = document.getElementById('role').value;
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Validation
+            if (!name || !email || !role) {
+                errorMessage.textContent = 'Please fill in all required fields';
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                return;
+            }
+            
+            // Get existing users from localStorage
+            let users = [];
+            const storedUsers = localStorage.getItem('users');
+            if (storedUsers) {
+                users = JSON.parse(storedUsers);
+            } else {
+                // Initialize with default users if none exist
+                users = [
+                    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
+                    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
+                    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User' }
+                ];
+            }
+            
+            // Create new user
+            const newUser = {
+                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                name: name,
+                email: email,
+                role: role
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            successMessage.textContent = 'User created successfully! Redirecting to user list...';
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            // Redirect after 1.5 seconds
+            setTimeout(() => {
+                window.location.href = 'list.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
