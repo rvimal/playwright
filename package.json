@@ -4,6 +4,8 @@
   "description": "Simple Playwright project with best practices for automation testing",
   "main": "index.js",
   "scripts": {
+    "start": "http-server app -p 3000 --cors",
+    "start:silent": "http-server app -p 3000 --cors --silent",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
@@ -22,6 +24,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.40.0"
+    "@playwright/test": "^1.40.0",
+    "http-server": "^14.1.1"
   }
 }

@@ -7,12 +7,10 @@ test.describe('User List Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     userListPage = new UserListPage(page);
     
-    // Clear localStorage before each test
-    await page.goto('about:blank');
-    await page.evaluate(() => localStorage.clear());
-    
+    // Navigate to the page first, then clear localStorage
     await userListPage.goto();
     await page.waitForLoadState('domcontentloaded');
+    await page.evaluate(() => localStorage.clear());
   });
 
   test('should display user list page correctly', async () => {

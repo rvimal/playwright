@@ -7,8 +7,8 @@ import { VALID_CREDENTIALS, TEST_USER } from '../data/testData';
 test.describe('End-to-End User Journey', () => {
   
   test.beforeEach(async ({ page }) => {
-    // Clear localStorage before each test
-    await page.goto('about:blank');
+    // Navigate to login page first, then clear localStorage
+    await page.goto('/login.html');
     await page.evaluate(() => localStorage.clear());
   });
 

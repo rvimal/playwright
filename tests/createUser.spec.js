@@ -8,11 +8,9 @@ test.describe('Create User Page Tests', () => {
   test.beforeEach(async ({ page }) => {
     createUserPage = new CreateUserPage(page);
     
-    // Clear localStorage before each test
-    await page.goto('about:blank');
-    await page.evaluate(() => localStorage.clear());
-    
+    // Navigate to the page first, then clear localStorage
     await createUserPage.goto();
+    await page.evaluate(() => localStorage.clear());
   });
 
   test('should display create user page correctly', async () => {
