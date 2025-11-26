@@ -1,13 +1,10 @@
 import { test, expect } from '../fixtures/index.js';
-import { beforeEachTest, afterEachTest, beforeAllTests, afterAllTests } from '../hooks/index.js';
+import { HookManager } from '../hooks/hookManager.js';
 
-beforeAllTests();
-afterAllTests();
+// Apply login-specific hooks for this test suite
+HookManager.applyLoginHooks();
 
 test.describe('Login Page Tests', () => {
-  // Apply common test hooks
-  beforeEachTest();
-  afterEachTest();
 
   test('should display login page correctly', async ({ loginPage, testContext }) => {
     testContext.log('Testing login page display');

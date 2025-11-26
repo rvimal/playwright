@@ -96,6 +96,9 @@ export default defineConfig({
   // Global setup/teardown
   globalSetup: require.resolve('./hooks/globalSetup.js'),
   globalTeardown: require.resolve('./hooks/globalTeardown.js'),
+  
+  // Global test setup (applies to all tests)
+  setupFiles: ['./tests/setup.js'],
 
   // Output directory for test results
   outputDir: 'test-results/',

@@ -1,10 +1,10 @@
 import { test, expect } from '../fixtures/index.js';
-import { beforeEachTest, afterEachTest } from '../hooks/index.js';
+import { HookManager } from '../hooks/hookManager.js';
+
+// Apply user management hooks for this test suite
+HookManager.applyUserManagementHooks();
 
 test.describe('User List Page Tests', () => {
-  // Apply common test hooks
-  beforeEachTest();
-  afterEachTest();
 
   test('should display user list page correctly', async ({ userListPage, testContext }) => {
     testContext.log('Testing user list page display');

@@ -1,11 +1,10 @@
 import { test, expect } from '../fixtures/index.js';
-import { beforeEachTest, afterEachTest, ConditionalHooks } from '../hooks/index.js';
+import { HookManager } from '../hooks/hookManager.js';
+
+// Apply E2E workflow hooks for this comprehensive test suite
+HookManager.applyE2EHooks();
 
 test.describe('End-to-End User Journey', () => {
-  // Apply common test hooks
-  beforeEachTest();
-  afterEachTest();
-  ConditionalHooks.forDataDrivenTests();
 
   test('complete user flow - login, view list, create user, delete user', async ({ pages, testData, testContext }, testInfo) => {
     testContext.log('Starting complete user management workflow');

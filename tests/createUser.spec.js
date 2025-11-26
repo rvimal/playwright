@@ -1,11 +1,10 @@
 import { test, expect } from '../fixtures/index.js';
-import { beforeEachTest, afterEachTest, ConditionalHooks } from '../hooks/index.js';
+import { HookManager } from '../hooks/hookManager.js';
+
+// Apply user management hooks for this test suite
+HookManager.applyUserManagementHooks();
 
 test.describe('Create User Page Tests', () => {
-  // Apply common test hooks
-  beforeEachTest();
-  afterEachTest();
-  ConditionalHooks.forDataDrivenTests();
 
   test('should display create user page correctly', async ({ createUserPage, testContext }) => {
     testContext.log('Testing create user page display');
