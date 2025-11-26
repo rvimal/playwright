@@ -1,5 +1,8 @@
 import { test, expect } from '../fixtures/index.js';
-import { beforeEachTest, afterEachTest } from '../hooks/index.js';
+import { beforeEachTest, afterEachTest, beforeAllTests, afterAllTests } from '../hooks/index.js';
+
+beforeAllTests();
+afterAllTests();
 
 test.describe('Login Page Tests', () => {
   // Apply common test hooks

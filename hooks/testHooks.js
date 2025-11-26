@@ -112,7 +112,7 @@ export function afterEachTest() {
  */
 export function beforeAllTests() {
   test.beforeAll(async ({ browser }, testInfo) => {
-    console.log(`🚀 Starting test suite: ${testInfo.project.name}`);
+    console.log(`🚀 ----Before ALL----- Starting test suite: ${testInfo.project.name}`);
     
     // Setup suite-level data or configuration
     // This could include creating test users, setting up database state, etc.
@@ -124,7 +124,7 @@ export function beforeAllTests() {
  */
 export function afterAllTests() {
   test.afterAll(async ({ browser }, testInfo) => {
-    console.log(`🏁 Completed test suite: ${testInfo.project.name}`);
+    console.log(`🏁  ----After ALL----- Completed test suite: ${testInfo.project.name}`);
     
     // Cleanup suite-level data
     // This could include removing test users, cleaning database, etc.
