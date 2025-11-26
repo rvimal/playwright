@@ -94,6 +94,20 @@ export default defineConfig({
   ],
 
   // Global setup/teardown
-  // globalSetup: require.resolve('./utils/global-setup'),
-  // globalTeardown: require.resolve('./utils/global-teardown'),
+  globalSetup: require.resolve('./hooks/globalSetup.js'),
+  globalTeardown: require.resolve('./hooks/globalTeardown.js'),
+
+  // Output directory for test results
+  outputDir: 'test-results/',
+  
+  // Test match patterns
+  testMatch: '**/*.spec.js',
+  
+  // Expect configuration
+  expect: {
+    // Maximum time expect() should wait for the condition to be met
+    timeout: 10 * 1000,
+    // Screenshot comparison threshold
+    threshold: 0.2,
+  },
 });

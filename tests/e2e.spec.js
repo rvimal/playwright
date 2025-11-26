@@ -1,45 +1,42 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { UserListPage } from '../pages/UserListPage';
-import { CreateUserPage } from '../pages/CreateUserPage';
-import { VALID_CREDENTIALS, TEST_USER } from '../data/testData';
+import { test, expect } from '../fixtures/index.js';
+import { beforeEachTest, afterEachTest, ConditionalHooks } from '../hooks/index.js';
 
 test.describe('End-to-End User Journey', () => {
-  
-  test.beforeEach(async ({ page }) => {
-    // Navigate to login page first, then clear localStorage
-    await page.goto('/login.html');
-    await page.evaluate(() => localStorage.clear());
-  });
+  // Apply common test hooks
+  beforeEachTest();
+  afterEachTest();
+  ConditionalHooks.forDataDrivenTests();
 
-  test('complete user flow - login, view list, create user, delete user', async ({ page }) => {
+  test('complete user flow - login, view list, create user, delete user', async ({ pages, testData, testContext }, testInfo) => {
+    testContext.log('Starting complete user management workflow');
+    testInfo.annotations.push({ type: 'data-driven', description: 'End-to-end workflow test' });
+    
     // Step 1: Login
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(VALID_CREDENTIALS.username, VALID_CREDENTIALS.password);
+    const credentials = await testData.getCredentials('admin');
+    await pages.login.goto();
+    await pages.login.login(credentials.username, credentials.password);
     
     // Verify successful login and redirect
-    await page.waitForURL('**/list.html');
-    expect(page.url()).toContain('list.html');
+    await pages.login.page.waitForURL('**/list.html');
+    expect(pages.login.page.url()).toContain('list.html');
+    testContext.addNote('Login successful');
     
     // Step 2: View user list
-    const userListPage = new UserListPage(page);
-    const initialUserCount = await userListPage.getUserCount();
+    const initialUserCount = await pages.userList.getUserCount();
     expect(initialUserCount).toBeGreaterThan(0);
+    testContext.addNote(`Initial user count: ${initialUserCount}`);
     
     // Step 3: Navigate to create user page
-    await userListPage.clickCreateUser();
-    await page.waitForURL('**/create-user.html');
+    await pages.userList.clickCreateUser();
+    await pages.login.page.waitForURL('**/create-user.html');
     
     // Step 4: Create new user
-    const createUserPage = new CreateUserPage(page);
-    const newUser = {
-      name: `E2E Test User ${Date.now()}`,
-      email: `e2e${Date.now()}@example.com`,
+    const newUser = await testData.generateUser({
+      name: `E2E Test User`,
       role: 'User'
-    };
+    });
     
-    await createUserPage.createUser(newUser);
+    await pages.createUser.createUser(newUser);
     
     // Verify success message
     const successMessage = await createUserPage.getSuccessMessage();

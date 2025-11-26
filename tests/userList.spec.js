@@ -1,66 +1,87 @@
-import { test, expect } from '@playwright/test';
-import { UserListPage } from '../pages/UserListPage';
+import { test, expect } from '../fixtures/index.js';
+import { beforeEachTest, afterEachTest } from '../hooks/index.js';
 
 test.describe('User List Page Tests', () => {
-  let userListPage;
+  // Apply common test hooks
+  beforeEachTest();
+  afterEachTest();
 
-  test.beforeEach(async ({ page }) => {
-    userListPage = new UserListPage(page);
+  test('should display user list page correctly', async ({ userListPage, testContext }) => {
+    testContext.log('Testing user list page display');
     
-    // Navigate to the page first, then clear localStorage
     await userListPage.goto();
-    await page.waitForLoadState('domcontentloaded');
-    await page.evaluate(() => localStorage.clear());
-  });
-
-  test('should display user list page correctly', async () => {
+    await userListPage.page.waitForLoadState('domcontentloaded');
+    
     await expect(userListPage.createUserButton).toBeVisible();
     
     const title = await userListPage.getTitle();
     expect(title).toBe('User List');
+    
+    testContext.addNote('User list page elements verified successfully');
   });
 
-  test('should display default users', async () => {
+  test('should display default users', async ({ userListPage, testContext }) => {
+    await userListPage.goto();
+    
     const userCount = await userListPage.getUserCount();
     expect(userCount).toBeGreaterThan(0);
+    
+    testContext.addNote(`Found ${userCount} default users`);
   });
 
-  test('should navigate to create user page', async ({ page }) => {
+  test('should navigate to create user page', async ({ userListPage, testContext }) => {
+    await userListPage.goto();
     await userListPage.clickCreateUser();
     
-    await page.waitForURL('**/create-user.html');
-    expect(page.url()).toContain('create-user.html');
+    await userListPage.page.waitForURL('**/create-user.html');
+    expect(userListPage.page.url()).toContain('create-user.html');
+    
+    testContext.addNote('Navigation to create user page verified');
   });
 
-  test('should display user data correctly', async () => {
+  test('should display user data correctly', async ({ userListPage, testContext }) => {
+    await userListPage.goto();
+    
     const userData = await userListPage.getUserDataByIndex(0);
     
     expect(userData.id).toBeTruthy();
     expect(userData.name).toBeTruthy();
     expect(userData.email).toBeTruthy();
     expect(userData.role).toBeTruthy();
+    
+    testContext.addNote(`User data verified: ${userData.name}`);
   });
 
-  test('should delete a user', async ({ page }) => {
+  test('should delete a user', async ({ userListPage, testContext }) => {
+    await userListPage.goto();
+    
     const initialCount = await userListPage.getUserCount();
     
     // Delete the first user (ID 1)
     await userListPage.deleteUser(1);
     
     // Wait for the page to update
-    await page.waitForTimeout(500);
+    await userListPage.page.waitForTimeout(500);
     
     const finalCount = await userListPage.getUserCount();
     expect(finalCount).toBe(initialCount - 1);
+    
+    testContext.addNote(`Successfully deleted user. Count changed from ${initialCount} to ${finalCount}`);
   });
 
-  test('should search for user by name', async () => {
+  test('should search for user by name', async ({ userListPage, testContext }) => {
+    await userListPage.goto();
+    
     const isPresent = await userListPage.isUserPresent('John Doe');
     expect(isPresent).toBe(true);
+    
+    testContext.addNote('User search functionality verified');
   });
 
-  test('should have correct table headers', async ({ page }) => {
-    const headers = await page.locator('thead th').allTextContents();
+  test('should have correct table headers', async ({ userListPage, testContext }) => {
+    await userListPage.goto();
+    
+    const headers = await userListPage.page.locator('thead th').allTextContents();
     
     expect(headers).toContain('ID');
     expect(headers).toContain('Name');
