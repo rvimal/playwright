@@ -1,0 +1,294 @@
+@startuml
+!theme cerulean-outline
+
+title Roo Code / Python Orchestrated Jira Backlog Analyzer
+
+' Global Formatting
+skinparam componentStyle uml2
+skinparam DatabaseBackgroundColor #f9f9f9
+skinparam NoteBackgroundColor #fff5ad
+skinparam FileBackgroundColor #e3f2fd
+skinparam actor {
+    BackgroundColor #e0f7fa
+    BorderColor #006064
+}
+
+actor User as "BA / PM"
+
+package "Local Processing Environment" {
+    
+    ' Requirement 10: Orchestration can be Roo Code or a Python Script
+    component [Orchestrator\n(Roo Code or Python Script)] as Orchestrator #strategy
+    
+    package "Dynamic Inputs (Requirement 9)" {
+        file "Backlog.xls" as BacklogInput
+        file "BRD.md" as BRD
+    }
+    
+    package "Pre-configured Logic (.md)" {
+        artifact "System_Prompts.md" as SysPrompts
+        artifact "Risk_Mitigation_Rules.md" as RiskPrompts
+    }
+    
+    package "Output" {
+        file "Prioritized_Backlog.xlsx" as ExcelOutput
+    }
+}
+
+node "Model Context Protocol (MCP)" {
+    [Jira MCP Server] as JiraMCP
+}
+
+cloud "LLM Provider" {
+    [GPT OSS Model] as LLM
+}
+
+database "Atlassian Ecosystem" {
+    [Jira API] as JiraAPI
+}
+
+' Workflow Interactions
+User --> BacklogInput : 1. Provide Backlog
+User --> BRD : 2. Provide Requirements
+User --> Orchestrator : 3. Trigger Process
+
+Orchestrator ..> BacklogInput : Reads/Parses
+Orchestrator ..> BRD : Reads Context
+Orchestrator ..> SysPrompts : Injects Logic
+Orchestrator ..> RiskPrompts : Injects Pre-configured Risks
+
+' External Communication
+Orchestrator <--> JiraMCP : 4. Fetch Ticket Details\n(via JQL/Search)
+JiraMCP <--> JiraAPI : Live Data Access
+
+Orchestrator <--> LLM : 5. Contextual Reasoning\n(Compare BRD vs Backlog)
+
+' Finalization
+Orchestrator --> ExcelOutput : 6. Generate Analyzed Report
+
+' Contextual Notes
+note bottom of Orchestrator
+  Acts as the Logic Engine. 
+  It manages the conversation state, 
+  invokes MCP tools, and handles 
+  file I/O for the BA/PM.
+end note
+
+note right of RiskPrompts
+  Requirement 3: Risk mitigation 
+  prompts are pre-configured 
+  within the system files.
+end note
+
+@enduml
+
+
+
+
+
+@startuml
+!theme cerulean-outline
+
+title Roo Code Jira Backlog Analyzer - Architecture Diagram
+
+' Global Settings
+skinparam componentStyle uml2
+skinparam DatabaseBackgroundColor #f9f9f9
+skinparam NoteBackgroundColor #fff5ad
+skinparam FileBackgroundColor #e3f2fd
+skinparam actor {
+    BackgroundColor #e0f7fa
+    BorderColor #006064
+}
+
+actor User as "BA / PM"
+
+package "Local Environment (Roo Code Context)" {
+    
+    ' The Core Logic Engine (No Python/LangChain)
+    [Roo Code Orchestrator] as Roo
+    
+    package "Dynamic User Inputs" {
+        file "Backlog.xls" as BacklogInput
+        file "BRD.md" as BRD
+    }
+    
+    package "Pre-configured Logic (.md)" {
+        artifact "Prioritization_Rules.md" as PPrompts
+        artifact "Risk_Mitigation_Prompts.md" as RPrompts
+    }
+    
+    package "Output" {
+        file "Prioritized_Analysis.xlsx" as ExcelOutput
+    }
+}
+
+node "MCP Layer" {
+    [Jira MCP Server] as JiraMCP
+}
+
+cloud "LLM Provider" {
+    [GPT OSS Model] as LLM
+}
+
+database "Atlassian Ecosystem" {
+    [Jira Cloud/Server API] as JiraAPI
+}
+
+' Relationships & Workflow
+' Step 1: User provides the specific files for this run
+User --> BacklogInput : 1. Uploads Backlog
+User --> BRD : 2. Provides Requirements
+
+' Step 2: Roo Code begins orchestration
+User --> Roo : 3. Triggers Analysis
+
+' Step 3: Roo Code reads local context
+Roo ..> BRD : Reads requirements
+Roo ..> BacklogInput : Parses ticket list
+Roo ..> PPrompts : Loads system logic
+Roo ..> RPrompts : Loads risk prompts
+
+' Step 4: External interactions
+Roo <--> JiraMCP : 4. Fetches live ticket\nmetadata/history
+JiraMCP <--> JiraAPI : Live JQL queries
+
+Roo <--> LLM : 5. Context + Prompts\nfor Reasoning
+
+' Step 5: Final output
+Roo --> ExcelOutput : 6. Writes prioritized list\nwith risk flags
+
+' Explanatory Notes
+note bottom of Roo
+  Roo Code handles the end-to-end 
+  logic: parsing XLS, managing 
+  conversation state with LLM, 
+  and executing MCP tools 
+  directly without Python.
+end note
+
+note right of RPrompts
+  Risk mitigation prompts are 
+  pre-configured and "baked into" 
+  the system instructions.
+end note
+
+@enduml
+
+
+
+
+
+@startuml
+!theme cerulean-outline
+
+title Roo Code Jira Backlog Analyzer - Architecture Diagram
+
+' Formatting
+skinparam componentStyle uml2
+skinparam DatabaseBackgroundColor #f9f9f9
+skinparam NoteBackgroundColor #fff5ad
+skinparam FileBackgroundColor #e3f2fd
+skinparam actor {
+    BackgroundColor #e0f7fa
+    BorderColor #006064
+}
+
+actor User as "BA / PM"
+
+package "Local Developer Environment (Roo Code Context)" {
+    
+    ' The Core Logic Engine
+    [Roo Code Orchestrator] as Roo
+    
+    package "User Input (Required)" {
+        ' Requirement 9: Only the xls file is provided by the user
+        file "Backlog.xls" as BacklogInput
+    }
+    
+    package "Pre-configured System Context (.md files)" {
+        ' These define the system's behavior, not provided per-run
+        artifact "BRD.md" as BRD
+        artifact "Prioritization_Prompts.md" as PPrompts
+        artifact "Risk_Mitigation.md" as RPrompts
+    }
+    
+    package "Output" {
+        file "Analyzed_Backlog.xlsx" as ExcelOutput
+    }
+}
+
+node "MCP Layer" {
+    [Jira MCP Server] as JiraMCP
+}
+
+cloud "LLM Provider" {
+    [GPT OSS Model] as LLM
+}
+
+database "Atlassian" {
+    [Jira API] as JiraAPI
+}
+
+' Relationships
+' User only provides the backlog XLS
+User --> BacklogInput : 1. Uploads
+
+' The trigger to Roo Code to start the process
+User --> Roo : 2. Start Backlog Analysis Task
+
+' Roo Code gathers context from pre-configured files
+Roo ..> BRD : Reads Business Requirements
+Roo ..> PPrompts : Reads Prioritization Logic
+Roo ..> RPrompts : Reads Pre-configured Risk Prompts
+
+' Roo Code parses the user-provided backlog
+Roo --> BacklogInput : 3. Parses Backlog Data
+
+' Interactions with external services
+Roo <--> JiraMCP : 4. Fetches Ticket Details (by ID from Backlog)
+JiraMCP <--> JiraAPI : Live Data Fetch (Labels, Assignee, etc.)
+
+Roo <--> LLM : 5. Passes Context + Parsed Data + Prompts for Analysis
+
+' Generate final output
+Roo --> ExcelOutput : 6. Exports Analyzed & Prioritized Results
+
+' Descriptive Notes
+note bottom of Roo
+  Roo Code is the logic engine, handling
+  file reading (XLS/MD), MCP tool orchestration,
+  LLM interaction, and Excel generation,
+  adhering to requirement #8 (no Python/LangChain).
+end note
+
+note right of BacklogInput
+  Requirement #9: This is the only per-run
+  input required from the BA/PM.
+end note
+
+@enduml
+
+
+
+Create a architecture diagram for below,
+
+1. I am creating a user case in AI which interacts with jira mcp
+
+2. Using business requirement document and jira mcp which access backlog 
+
+3. Using the few prompts, it will decide and give me the list of jira tickets with hight priority tickets and risk mitigation prompts are preconfigured.
+
+4. Output will in the form of excel file 
+
+5. It interacts with GPT OSS and uses jira mcp 
+
+6. We use roo code for access the llm, mcp and inputting the BRD document and prompt using md file
+
+7. So the logic processing engine would be roo code 
+
+8. do not use langchain or python 
+
+9. BA/PM needs to give only the backlog xls file in the system. 
+
+Give the diagram in puml
